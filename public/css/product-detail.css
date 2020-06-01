@@ -1,0 +1,14 @@
+.product-detail {
+	padding: 2rem;
+	padding-top: 10px;
+}
+
+h2 {
+	background-color: aqua;
+	color: black;
+}
+
+img {
+	size: 3rem;
+	width: 100px;
+}
