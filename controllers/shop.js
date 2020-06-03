@@ -17,7 +17,7 @@ exports.getProduct = (req, res) => {
 		res.render('shop/product-detail', {
 			pageTitle: 'Product Detail',
 			product: product,
-			path: '',
+			path: '/products',
 		});
 	});
 };
@@ -35,6 +35,14 @@ exports.getIndex = (req, res) => {
 
 exports.getCart = (req, res) => {
 	res.render('shop/cart', { pageTitle: 'Cart', path: '/cart' });
+};
+
+exports.postCart = (req, res) => {
+	const productId = req.body.productId;
+	Product.findById(productId, (product) => {
+		console.log(productId);
+		res.redirect('/cart');
+	});
 };
 
 exports.getCheckout = (req, res) => {
