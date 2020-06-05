@@ -18,7 +18,8 @@ const getProductsFromFile = (cb) => {
 };
 
 module.exports = class Product {
-	constructor(title, imageUrl, description, price) {
+	constructor(id, title, imageUrl, description, price) {
+		this.id = id;
 		this.title = title;
 		this.imageUrl = imageUrl;
 		this.description = description;
@@ -26,12 +27,24 @@ module.exports = class Product {
 	}
 
 	save() {
-		this.id = Math.random().toString();
 		getProductsFromFile((products) => {
-			products.push(this);
-			fs.writeFile(p, JSON.stringify(products), (err) => {
-				console.log(err);
-			});
+			if (this.id) {
+				const exsistingProductIndex = products.findIndex(
+					(product) => product.id === this.id
+				);
+
+				const updatedProducts = [...products];
+				updatedProducts[exsistingProductIndex] = this;
+				fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+					console.log(err);
+				});
+			} else {
+				this.id = Math.random().toString();
+				products.push(this);
+				fs.writeFile(p, JSON.stringify(products), (err) => {
+					console.log(err);
+				});
+			}
 		});
 	}
 
@@ -43,6 +56,22 @@ module.exports = class Product {
 		getProductsFromFile((products) => {
 			const product = products.find((p) => p.id === id);
 			cb(product);
+		});
+	}
+
+	static deleteProductById(id) {
+		getProductsFromFile((products) => {
+			const delProductIndex = products.findIndex((p) => p.id === id);
+			const updatedProducts = [...products];
+			let temp = updatedProducts[delProductIndex];
+			updatedProducts[delProductIndex] =
+				updatedProducts[updatedProducts.length - 1];
+			updatedProducts[updatedProducts.length - 1] = temp;
+			updatedProducts.pop();
+
+			fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+				console.log(err);
+			});
 		});
 	}
 };
