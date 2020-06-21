@@ -144,6 +144,41 @@ exports.postCartDeleteProduct = (req, res) => {
 		});
 };
 
+exports.postOrder = (req, res) => {
+	let fetchedCart;
+	req.user
+		.getCart()
+		.then((cart) => {
+			fetchedCart = cart;
+			return cart.getProducts();
+		})
+		.then((products) => {
+			req.user
+				.createOrder()
+				.then((order) => {
+					return order.addProducts(
+						products.map((product) => {
+							product.orderItem = { quantity: product.cartItem.quantity };
+							return product;
+						})
+					);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		})
+		.then((result) => {
+			//clean up the cart
+			return fetchedCart.setProducts(null);
+		})
+		.then((result) => {
+			res.redirect('/orders');
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
 exports.getCheckout = (req, res) => {
 	res.render('shop/checkout', { pageTitle: 'Check-Out', path: '/checkout' });
 };
