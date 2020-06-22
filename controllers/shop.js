@@ -184,5 +184,16 @@ exports.getCheckout = (req, res) => {
 };
 
 exports.getOrders = (req, res) => {
-	res.render('shop/orders', { pageTitle: 'Orders', path: '/orders' });
+	req.user
+		.getOrders({ include: ['products'] })
+		.then((orders) => {
+			res.render('shop/orders', {
+				pageTitle: 'Orders',
+				path: '/orders',
+				orders: orders,
+			});
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 };
